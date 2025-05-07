@@ -1,11 +1,22 @@
 CFLAGS := -Wall -Wextra
 CFLAGS += -O2
 CFLAGS += -pedantic
+CFLAGS += -Iparser
 
-.SUFFIXES: .c .o
+LIB_SRCS := lib/ast.c lib/parser.c lib/semantic.c 
+LIB_OBJS := $(LIB_SRCS:.c=.o)
 
-.c.o:
+PROGS = lam2bru
+
+all: $(PROGS)
+
+lam2bru: lam2bru.o $(LIB_OBJS)
+	$(CC) $^ -o $@
+
+%.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-.PHONY: all
-all: lam2bru.o
+clean:
+	rm -f $(LIB_OBJS) lam2bru.o $(PROGS)
+
+.PHONY: all clean
