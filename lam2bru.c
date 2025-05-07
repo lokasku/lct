@@ -5,7 +5,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <unistd.h>
 
 #define USAGE \
@@ -16,7 +15,7 @@ Convert a lambda calculus string in standard notation to De Bruijn notation. \n\
 EXAMPLES\n\
     $ Y=\"\\f.(\\x.f (xx)) (\\x. f (xx))\"\n\
     $ lam2bru $Y\n\
-    \\ [\\1 [0 0]] [\\1 [0 0]]\n\
+    \\[\\1 [0 0]] [\\1 [0 0]]\n\
     $ lam2bru \"(\\x.x x) (\\y.y y)\"\n\
     [\\0 0] [\\0 0]\n"
 
@@ -25,7 +24,6 @@ EXAMPLES\n\
 #define isalpha(c) (((c) & ~0x20) >= 'A' && ((c) & ~0x20) <= 'Z')
 
 enum {
-    ALLOC_ERR,
     UNDEF_ERR,
     UNEXP_ERR,
 };
@@ -60,15 +58,6 @@ help(int argc,
         }
 }
 
-stack*
-new_stack(void)
-{
-    stack* s = malloc(sizeof(stack));
-    if (!s) exit(ALLOC_ERR);
-    s->sp = 0;
-    return s;
-}
-
 int
 lookup(stack* env,
        char var)
@@ -84,46 +73,59 @@ lookup(stack* env,
 
 void
 show(stack* env,
-     stack* ssz,
+     stack* bds,
      cursor* input)
 {
+    int req_space = 0;
+
     while (input->stream[input->pos] != '\0') {
         char curr = input->stream[input->pos];
+
         switch (curr) {
             case ' ':
                 input->pos++;
-                continue;
+                break;
 
             case '\\':
-                fputs("\\", stdout);
+                if (req_space) fputc(' ', stdout);
+                fputc('\\', stdout);
                 input->pos++;
                 env->pile[env->sp++] = input->stream[input->pos++];
-                ssz->pile[ssz->sp]++;
+                bds->pile[bds->sp]++;
                 if (input->stream[input->pos++] != '.') exit(UNEXP_ERR);
-                continue;
+                req_space = 0;
+                break;
 
             case '(':
-                fputs(" [", stdout);
-                ssz->sp++;
+                if (req_space) fputc(' ', stdout);
+                fputc('[', stdout);
+                bds->sp++;
                 input->pos++;
-                continue;
+                req_space = 0;
+                break;
 
             case ')':
-                fputs("] ", stdout);
-                env->sp -= ssz->pile[ssz->sp];
+                fputc(']', stdout);
+                env->sp -= bds->pile[bds->sp];
                 input->pos++;
-                ssz->sp--;
-                continue;
+                bds->sp--;
+                req_space = 1;
+                break;
 
             default:
                 if (isalpha(curr)) {
-                    printf("%d", lookup(env, curr));
+                    if (req_space) fputc(' ', stdout);
+                    int idx = lookup(env, curr);
+                    printf("%d", idx);
                     input->pos++;
-                    continue;
+                    req_space = 1;
+                    break;
                 }
                 exit(UNEXP_ERR);
         }
     }
+
+    fputc('\n', stdout);
 }
 
 int
@@ -132,12 +134,12 @@ main(int argc, char *argv[])
     help(argc, argv);
 
     char* expr = argc > 1 ? argv[1] : "\\x.\\y.\\z.xy(xz)";
-    
+
     cursor input = {0, expr};
     stack env = {0};
-    stack ssz = {0};
+    stack bds = {0};
 
-    show(&env, &ssz, &input);
-    
+    show(&env, &bds, &input);
+
     return 0;
 }
