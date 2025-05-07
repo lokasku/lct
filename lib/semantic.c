@@ -1,3 +1,8 @@
+/*
+ * SPDX-License-Identifier: ISC
+ * SPDX-FileCopyrightText: Copyright 2025 lokasku <lukasku@proton.me>
+ */
+
 #include "semantic.h"
 
 static int occ[52] = {0};

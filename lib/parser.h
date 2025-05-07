@@ -1,3 +1,8 @@
+/*
+ * SPDX-License-Identifier: ISC
+ * SPDX-FileCopyrightText: Copyright 2025 lokasku <lukasku@proton.me>
+ */
+
 #ifndef PARSER_H
 #define PARSER_H
 

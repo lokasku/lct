@@ -1,9 +1,13 @@
+/*
+ * SPDX-License-Identifier: ISC
+ * SPDX-FileCopyrightText: Copyright 2025 lokasku <lukasku@proton.me>
+ */
+
 #include <stdlib.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
 #include "parser.h"
-#include "semantic.h"
 
 static void skip(Parser*);
 static int is_alpha(char);

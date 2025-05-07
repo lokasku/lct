@@ -1,3 +1,8 @@
+/*
+ * SPDX-License-Identifier: ISC
+ * SPDX-FileCopyrightText: Copyright 2025 lokasku <lukasku@proton.me>
+ */
+
 #include <stdlib.h>
 #include "ast.h"
 
