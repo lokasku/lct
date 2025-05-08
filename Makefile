@@ -4,21 +4,18 @@
 CFLAGS := -Wall -Wextra
 CFLAGS += -O2
 CFLAGS += -pedantic
-CFLAGS += -Iparser
 
-LIB_SRCS := lib/ast.c lib/parser.c lib/semantic.c
-LIB_OBJS := $(LIB_SRCS:.c=.o)
-PROGS = lam2bru ski2lam
+PROGS = lam2bru ski2lam breduc
 
 all: $(PROGS)
 
-$(PROGS): %: %.o $(LIB_OBJS)
+$(PROGS): %: %.o
 	$(CC) $^ -o $@
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(LIB_OBJS) $(PROGS) $(PROGS)
+	rm -f $(PROGS)
 
 .PHONY: all clean
